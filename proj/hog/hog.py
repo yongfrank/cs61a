@@ -23,6 +23,17 @@ def roll_dice(num_rolls, dice=six_sided):
     assert num_rolls > 0, 'Must roll at least once.'
     # BEGIN PROBLEM 1
     "*** YOUR CODE HERE ***"
+    sum_of_rolls = 0
+    will_return_one = False
+    while num_rolls > 0:
+        temp_result = dice()
+        if temp_result == 1:
+            will_return_one = True
+        sum_of_rolls += temp_result
+        num_rolls -= 1
+    
+    if will_return_one: return 1
+    return sum_of_rolls
     # END PROBLEM 1
 
 
@@ -33,7 +44,16 @@ def oink_points(player_score, opponent_score):
     opponent_score: The total score of the other player.
     """
     # BEGIN PROBLEM 2
-    "*** YOUR CODE HERE ***"
+    if opponent_score == 0:
+        return 1
+
+    ones = opponent_score % 10
+    tens = opponent_score // 10 % 10
+    
+    result = tens * 2 - ones
+    if result < 1: return 1
+    else: return result
+
     # END PROBLEM 2
 
 
@@ -55,10 +75,15 @@ def take_turn(num_rolls, player_score, opponent_score, dice=six_sided, goal=GOAL
     assert max(player_score, opponent_score) < goal, 'The game should be over.'
     # BEGIN PROBLEM 3
     "*** YOUR CODE HERE ***"
-    # END PROBLEM 3
+    if num_rolls == 0:
+        return oink_points(player_score, opponent_score)
+    return roll_dice(num_rolls, dice)
+    # END PROBLEM 3·
 
 
 def is_prime(n):
+    # if n == 1 || n == 0:
+    #     return False
     if n == 2:
         return True
     elif n % 2 == 0:
@@ -79,6 +104,12 @@ def pigs_on_prime(player_score, opponent_score):
     """
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
+    if is_prime(player_score):
+        after_score = player_score + 1
+        while(is_prime(after_score) == False):
+            after_score += 1
+        return after_score - player_score
+    return 0
     # END PROBLEM 4
 
 
