@@ -67,6 +67,12 @@ def take_turn(num_rolls, player_score, opponent_score, dice=six_sided, goal=GOAL
     opponent_score:  The total score of the opponent.
     dice:            A function that simulates a single dice roll outcome.
     goal:            The goal score of the game.
+
+    # >>> take_turn(5, 21, 30) ? Generate 5 dices, return sum result of 5 dices, if there is 1 in dice, return 1
+    >>> take_turn(0, 1, 1) # ? tens * 2 - ones = 
+    1
+    >>> take_turn(0, 21, 30) # ? tens * 2 - ones = 6
+    6
     """
     # Leave these assert statements here; they help check for errors.
     assert type(num_rolls) == int, 'num_rolls must be an integer.'
@@ -145,11 +151,31 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     dice:       A function of zero arguments that simulates a dice roll.
     goal:       The game ends and someone wins when this score is reached.
     say:        The commentary function to call every turn.
+    
+    >>> import hog
+    >>> always_three = hog.make_test_dice(3)
+    >>> always = always_roll
+    >>> s0, s1 = hog.play(always(5), always(5), goal=10, dice=always_three)
+    >>> s0
+    15
+    >>> s1
+    0
+    >>> s0, s1 = hog.play(always(5), always(3), score0=91, score1=10, dice=always_three)
+    
     """
     who = 0  # Who is about to take a turn, 0 (first) or 1 (second)
     leader = None  # To be used in problem 7
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    while score0 < goal and score1 < goal:
+        if who == 0:
+            score0 += take_turn(strategy0(score0, score1), score0, score1, dice, goal)
+            score0 += pigs_on_prime(score0, score1)
+        else:
+            score1 += take_turn(strategy1(score1, score0), score1, score0, dice, goal)
+            score1 += pigs_on_prime(score1, score0)
+        who = next_player(who)
+
     # END PROBLEM 5
     # (note that the indentation for the problem 7 prompt (***YOUR CODE HERE***) might be misleading)
     # BEGIN PROBLEM 7
