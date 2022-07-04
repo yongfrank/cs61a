@@ -1,5 +1,7 @@
 """CS 61A Presents The Game of Hog."""
 
+from operator import index
+from unittest import result
 from dice import six_sided, four_sided, make_test_dice
 from ucb import main, trace, interact
 from math import sqrt
@@ -17,6 +19,10 @@ def roll_dice(num_rolls, dice=six_sided):
 
     num_rolls:  The number of dice rolls that will be made.
     dice:       A function that simulates a single dice roll outcome.
+
+    # >>> roll_dice(num_rolls = 3, dice = six_sided)
+    random 3 value(num_rolls) from 1 to 6 generated and sum. If there is one in three values,
+    return 1
     """
     # These assert statements ensure that num_rolls is a positive integer.
     assert type(num_rolls) == int, 'num_rolls must be an integer.'
@@ -134,7 +140,6 @@ def silence(score0, score1, leader=None):
     """Announce nothing (see Phase 2)."""
     return leader, None
 
-
 def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
          goal=GOAL_SCORE, say=silence):
     """Simulate a game and return the final scores of both players, with Player
@@ -161,6 +166,18 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     >>> s1
     0
     >>> s0, s1 = hog.play(always(5), always(3), score0=91, score1=10, dice=always_three)
+    >>> from hog import play, always_roll, both, announce_lead_changes, say_scores
+    >>> from dice import make_test_dice
+    >>> #
+    >>> def echo(s0, s1, player=None):
+    ...     return player, str(s0) + " " + str(s1)
+    >>> strat0 = lambda score, opponent: 1 - opponent // 10
+    >>> strat1 = always_roll(3)
+    >>> s0, s1 = play(strat0, strat1, dice=make_test_dice(4, 2, 6), goal=15, say=echo)
+    4 0
+    4 12
+    7 12
+    7 24
     
     """
     who = 0  # Who is about to take a turn, 0 (first) or 1 (second)
@@ -179,7 +196,10 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     # END PROBLEM 5
     # (note that the indentation for the problem 7 prompt (***YOUR CODE HERE***) might be misleading)
     # BEGIN PROBLEM 7
-    "*** YOUR CODE HERE ***"
+        leader, message = say(score0, score1, leader)
+        if message != None or "":
+            print(message)
+
     # END PROBLEM 7
     return score0, score1
 
@@ -214,6 +234,24 @@ def announce_lead_changes(score0, score1, last_leader=None):
     """
     # BEGIN PROBLEM 6
     "*** YOUR CODE HERE ***"
+    if score0 > score1: 
+        present_leader = 0
+        score_difference = score0 - score1
+        if last_leader == 0:
+            message = None
+        else:
+            message = "Player 0 takes the lead by " + str(score_difference) 
+    elif score0 < score1:
+        present_leader = 1
+        score_difference = score1 - score0
+        if last_leader == 1:
+            message = None
+        else:
+            message = "Player 1 takes the lead by " + str(score_difference) 
+    else:
+        message = None
+        present_leader = None
+    return present_leader, message
     # END PROBLEM 6
 
 
@@ -277,9 +315,37 @@ def make_averaged(original_function, total_samples=1000):
     >>> averaged_dice = make_averaged(roll_dice, 1000)
     >>> averaged_dice(1, dice)
     3.0
+
+    >>> from hog import *
+    >>> dice = make_test_dice(3, 1, 5, 6)
+    >>> averaged_dice = make_averaged(dice, 1000)
+    >>> # Average of calling dice 1000 times
+    >>> averaged_dice()
+    3.75
+
+    >>> from hog import *
+    >>> dice = make_test_dice(3, 1, 5, 6)
+    >>> averaged_roll_dice = make_averaged(roll_dice, 1000)
+    >>> # Average of calling roll_dice 1000 times
+    >>> # Enter a float (e.g. 1.0) instead of an integer
+    >>> averaged_roll_dice(2, dice)
+    6.0
+
     """
     # BEGIN PROBLEM 8
     "*** YOUR CODE HERE ***"
+    def average_value_caculator(*args):
+        roll_dice_results = 0.0
+        iteraltion_times = total_samples
+
+        while(iteraltion_times > 0):
+            iteraltion_times -= 1
+            roll_dice_results += original_function(*args)
+
+        average_value = roll_dice_results / total_samples
+        return average_value
+    return average_value_caculator
+    
     # END PROBLEM 8
 
 
@@ -291,9 +357,30 @@ def max_scoring_num_rolls(dice=six_sided, total_samples=1000):
     >>> dice = make_test_dice(1, 6)
     >>> max_scoring_num_rolls(dice)
     1
+    >>> from hog import *
+    >>> dice = make_test_dice(3)   # dice always returns 3
+    >>> max_scoring_num_rolls(dice, total_samples=1000)
+    10
+    >>> from hog import *
+    >>> dice = make_test_dice(1,2)     # Remember if there is in inside result, the result is 1
+    >>> max_scoring_num_rolls(dice, total_samples=1000)
+    1
     """
     # BEGIN PROBLEM 9
     "*** YOUR CODE HERE ***"
+    i = 1
+    max_scoring = 0.0
+    index_max = 1 
+    while(i <= 10):
+        result = make_averaged(roll_dice, total_samples)(i, dice)
+        # print(f"DEBUG: result = {result}")
+        if result > max_scoring:
+            max_scoring = result
+            index_max = i
+        i += 1
+
+    return index_max
+
     # END PROBLEM 9
 
 
@@ -334,7 +421,9 @@ def oink_points_strategy(score, opponent_score, threshold=8, num_rolls=6):
     returns NUM_ROLLS otherwise.
     """
     # BEGIN PROBLEM 10
-    return 6  # Remove this line once implemented.
+    if threshold <= oink_points(score, opponent_score):
+        return 0
+    return num_rolls
     # END PROBLEM 10
 
 
@@ -344,7 +433,12 @@ def pigs_on_prime_strategy(score, opponent_score, threshold=8, num_rolls=6):
     Otherwise, it returns NUM_ROLLS.
     """
     # BEGIN PROBLEM 11
-    return 6  # Remove this line once implemented.
+    result_of_oink = oink_points(score, opponent_score)
+    score_getted = pigs_on_prime(score + result_of_oink, opponent_score) + result_of_oink
+    print(f"DEBUG: Threshold: {threshold}, score getted: {score_getted}, prime judge: {score + result_of_oink}")
+    if score_getted >= threshold:
+        return 0
+    return num_rolls
     # END PROBLEM 11
 
 

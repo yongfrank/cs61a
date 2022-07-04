@@ -8,3 +8,12 @@ def make_fair_dice(sides):
     def dice():
         return random()
     return dice
+
+m = None
+message = "hi" + str(m)
+print(message)
+
+def make_area_function(shape_constant=1):
+    def area_function(r):
+        return r*r*shape_constant
+    return area_function
