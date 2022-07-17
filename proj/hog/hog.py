@@ -435,7 +435,7 @@ def pigs_on_prime_strategy(score, opponent_score, threshold=8, num_rolls=6):
     # BEGIN PROBLEM 11
     result_of_oink = oink_points(score, opponent_score)
     score_getted = pigs_on_prime(score + result_of_oink, opponent_score) + result_of_oink
-    print(f"DEBUG: Threshold: {threshold}, score getted: {score_getted}, prime judge: {score + result_of_oink}")
+    # print(f"DEBUG: Threshold: {threshold}, score getted: {score_getted}, prime judge: {score + result_of_oink}")
     if score_getted >= threshold:
         return 0
     return num_rolls
