@@ -19,6 +19,13 @@ def count_occurrences(t, n, x):
     2
     """
     "*** YOUR CODE HERE ***"
+    index = 0
+    count = 0
+    while index < n:
+        if next(t) == x:
+            count += 1
+        index += 1
+    return count
 
 
 def scale(it, multiplier):
@@ -35,6 +42,9 @@ def scale(it, multiplier):
     [2, 4, 6, 8, 10]
     """
     "*** YOUR CODE HERE ***"
+    after_multi = [x * multiplier for x in it]
+    for item in after_multi:
+        yield item
 
 
 def hailstone(n):
@@ -51,3 +61,12 @@ def hailstone(n):
     1
     """
     "*** YOUR CODE HERE ***"
+    halistone_sequence = []
+    while(n != 1):
+        halistone_sequence.append(int(n))
+        if n % 2 == 0:
+            n = n / 2
+        else:
+            n = n * 3 + 1
+    halistone_sequence.append(1)
+    return halistone_sequence
