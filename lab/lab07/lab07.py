@@ -1,3 +1,8 @@
+from unittest import result
+
+from numpy import empty
+
+
 def store_digits(n):
     """Stores the digits of a positive number n in a linked list.
 
@@ -15,6 +20,19 @@ def store_digits(n):
     >>> link1 = Link(3, Link(Link(4), Link(5, Link(6))))
     """
     "*** YOUR CODE HERE ***"
+    # if n < 10:
+    #     return Link(n)
+    # x = n
+    # len_num = 1
+    # while x > 10:
+    #     x = x // 10
+    #     len_num *= 10
+    # return Link(x, store_digits(n % len_num))
+    result = Link.empty
+    while n > 0:
+        result = Link(n % 10, result)
+        n //= 10
+    return result
 
 
 def every_other(s):
@@ -35,6 +53,11 @@ def every_other(s):
     Link(4)
     """
     "*** YOUR CODE HERE ***"
+    if s is Link.empty or s.rest is Link.empty:
+        return 
+    else:
+        s.rest = s.rest.rest
+        every_other(s.rest)
 
 
 def cumulative_mul(t):
@@ -51,6 +74,12 @@ def cumulative_mul(t):
     Tree(5040, [Tree(60, [Tree(3), Tree(4), Tree(5)]), Tree(42, [Tree(7)])])
     """
     "*** YOUR CODE HERE ***"
+    for b in t.branches:
+        cumulative_mul(b)
+    total = t.label
+    for b in t.branches:
+        total *= b.label
+    t.label = total
 
 
 def has_cycle(link):
